@@ -211,8 +211,14 @@ gameClusterLayer = L.markerClusterGroup({
         let groupBounds = L.featureGroup(gameClusterLayer.getLayers()).getBounds();
         Map.flyToBounds(groupBounds, { duration: 1.5, padding: [30, 30] });
     } else {
-        // Ronde 2 & 3: Layer kosong (agar tidak dicontek). Zoom ke tengah Indonesia sebagai posisi netral.
-        Map.flyTo([-2.5489, 118.0149], 5, { duration: 1.5 }); 
+        // Ronde 2 & 3: Tampilkan seluruh wilayah Indonesia secara pas di layar
+        Map.fitBounds([
+            [MAX_PH_LAT, MAX_PH_LON], 
+            [MIN_PH_LAT, MIN_PH_LON]
+        ], { 
+            duration: 1.5, 
+            padding: [20, 20] 
+        });
     }
 }
 
