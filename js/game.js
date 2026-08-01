@@ -205,10 +205,15 @@ function jalankanRonde() {
     else if (currentGameRound === 3) setupGame3();
 
     Map.addLayer(gameClusterLayer);
-    
-    // Zoom agar semua marker game terlihat
-    let groupBounds = L.featureGroup(gameClusterLayer.getLayers()).getBounds();
-    Map.flyToBounds(groupBounds, { duration: 1.5, padding: [30, 30] });
+    // --- PERUBAHAN LOGIKA ZOOM ---
+    if (currentGameRound === 1) {
+        // Hanya Ronde 1 yang memiliki marker di peta, biarkan peta zoom ke kumpulan marker tersebut
+        let groupBounds = L.featureGroup(gameClusterLayer.getLayers()).getBounds();
+        Map.flyToBounds(groupBounds, { duration: 1.5, padding: [30, 30] });
+    } else {
+        // Ronde 2 & 3: Layer kosong (agar tidak dicontek). Zoom ke tengah Indonesia sebagai posisi netral.
+        Map.flyTo([-2.5489, 118.0149], 5, { duration: 1.5 }); 
+    }
 }
 
 // ------------------------------------------
@@ -247,12 +252,6 @@ let prefix = getGamePrefix();
     
     gameMessage.innerHTML = `Di manakah ${kataTanya} dari:<br><strong style="font-size:20px; color:#d9534f;">${targetGameData.title}</strong>?`;
     
-    // 2. Siapkan Marker BISU di peta
-    poolGameData.forEach(record => {
-        let marker = L.marker([record.lat, record.lon], { icon: ikonTetesanAir, interactive: false }); // interactive: false = BISU
-        gameClusterLayer.addLayer(marker);
-    });
-
  // 3. Ambil Semua Wilayah Benar
     let provIdsBenar = Object.keys(targetGameData.designations).filter(p => p !== 'all' && ProvinceIndex[p] && ProvinceIndex[p].name !== 'Wilayah Lainnya/Tidak Spesifik');
     
@@ -279,7 +278,8 @@ let prefix = getGamePrefix();
     options.sort(() => 0.5 - Math.random());
 
     // 5. Render Tombol Pilihan
-    renderTombolPilihanGanda(options, targetGameData.mapMarker); // Kirim marker asli untuk evaluasi
+let markerRahasia = L.marker([targetGameData.lat, targetGameData.lon], { icon: ikonTetesanAir });
+    renderTombolPilihanGanda(options, markerRahasia);
 }
 
 // ------------------------------------------
@@ -298,11 +298,6 @@ let imgUrl = `${COMMONS_WIKI_URL_PREF}Special:FilePath/${encodeURIComponent(targ
         <img src="${imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin-top:10px; border:2px solid #ddd;">
     `;
 
-    // Marker Bisu
-    poolGameData.forEach(record => {
-        let marker = L.marker([record.lat, record.lon], { icon: ikonTetesanAir, interactive: false });
-        gameClusterLayer.addLayer(marker);
-    });
 
     // Cari distractor dari provinsi yang sama jika ada
     let provIdsBenar = Object.keys(targetGameData.designations).filter(p => p !== 'all' && ProvinceIndex[p]);
@@ -323,7 +318,9 @@ let imgUrl = `${COMMONS_WIKI_URL_PREF}Special:FilePath/${encodeURIComponent(targ
     let options = [{ nama: targetGameData.title, benar: true }, ...distractors.map(d => ({ nama: d.title, benar: false }))];
     options.sort(() => 0.5 - Math.random());
 
-    renderTombolPilihanGanda(options, targetGameData.mapMarker);
+// --- TAMBAHAN BARU ---
+    let markerRahasia = L.marker([targetGameData.lat, targetGameData.lon], { icon: ikonTetesanAir });
+    renderTombolPilihanGanda(options, markerRahasia);
 }
 
 // ------------------------------------------
@@ -377,6 +374,13 @@ function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
     }
 
     gameDialog.style.border = isBenar ? "3px solid green" : "3px solid red";
+
+// --- TAMBAHAN BARU ---
+    // Masukkan marker rahasia ke peta HANYA setelah pemain selesai menjawab
+    if (markerSistem && !gameClusterLayer.hasLayer(markerSistem)) {
+        gameClusterLayer.addLayer(markerSistem);
+    }
+    // ---------------------
     
     // Animasi Terbang
     let durasiTerbang = isBenar ? 1.5 : 2.5;
