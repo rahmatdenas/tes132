@@ -149,6 +149,43 @@ function jalankanRonde() {
         zoomToBoundsOnClick: true
     });
 
+    // ---> TAMBAHAN WAJIB: Event klik kluster KHUSUS layer game
+    gameClusterLayer.on('clusterclick', function (a) {
+        // Evaluasi instan kluster INI HANYA berlaku di Ronde 1
+        if (currentGameRound !== 1) return; 
+
+        let cluster = a.layer;
+        let bounds = cluster.getBounds();
+        // Cek apakah koordinat semua marker di dalam kluster ini sama persis bertumpuk
+        let isSamePoint = bounds.getSouthWest().equals(bounds.getNorthEast());
+        
+        let currentZoom = Map.getZoom();
+        let maxZoom = Map.getMaxZoom();
+
+        // JIKA TITIK BERTUMPUK PERSIS (Medan 2) ATAU ZOOM MENTOK
+        if (isSamePoint || currentZoom >= maxZoom) {
+            let anakKluster = cluster.getAllChildMarkers();
+            let targetDitemukan = false;
+
+            // Cari apakah target jawaban ada di dalam kluster bertumpuk ini
+            for (let i = 0; i < anakKluster.length; i++) {
+                if (anakKluster[i] === targetGameData.mapMarkerGame) {
+                    targetDitemukan = true;
+                    break;
+                }
+            }
+
+            // LANGSUNG EVALUASI TANPA PERLU DIURAI (SPIDERFY)
+            if (targetDitemukan) {
+                // Jawaban Benar (Misal: Cari Mi Becek, klik kluster Medan(2), Mi Becek ada di dalam)
+                evaluasiJawabanGame(true, targetGameData.title, targetGameData.id, targetGameData.mapMarkerGame);
+            } else {
+                // Jawaban Salah (Misal: Cari Gudeg, klik kluster Medan(2), Gudeg tidak ada di dalam)
+                evaluasiJawabanGame(false, "Area Titik Bertumpuk", null, targetGameData.mapMarkerGame);
+            }
+        }
+    });
+
     // Ambil Data Memenuhi Syarat
     let allValid = Object.values(Records).filter(r => r.lat && r.lon && r.imageFilename);
     let availableForTarget = allValid.filter(r => !usedGameQIDs.has(r.id));
@@ -178,7 +215,7 @@ function jalankanRonde() {
 // GAME 1: Cari Marker di Peta
 // ------------------------------------------
 function setupGame1() {
-let prefix = getGamePrefix();
+    let prefix = getGamePrefix();
     let kataTanya = (prefix === 'letak' || prefix === 'lokasi sekarang') ? 'lokasi' : prefix;
     
     gameMessage.innerHTML = `Temukan di peta ${kataTanya}:<br><strong style="font-size:20px; color:#d9534f;">${targetGameData.title}</strong>?`;
@@ -187,7 +224,11 @@ let prefix = getGamePrefix();
     poolGameData.forEach(record => {
         let marker = L.marker([record.lat, record.lon], { icon: ikonTetesanAir });
         
-        // Event khusus game
+        // ---> TAMBAHAN WAJIB: Simpan referensi marker ke data record 
+        // agar nanti bisa dicocokkan saat kluster diklik
+        record.mapMarkerGame = marker; 
+        
+        // Event klik normal (untuk marker yang berdiri sendiri / tidak bertumpuk)
         marker.on('click', function() {
             let isBenar = (record.id === targetGameData.id);
             evaluasiJawabanGame(isBenar, record.title, record.id, marker);
