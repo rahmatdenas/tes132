@@ -421,34 +421,6 @@ Cluster.on('clusterclick', function (a) {
   let isSamePoint = bounds.getSouthWest().equals(bounds.getNorthEast());
 
   if (currentZoom >= maxZoom || isSamePoint) {
-
-	  // ========================================================
-    // --- SISIPAN LOGIKA GAME MODE ---
-    // Pastikan ini hanya berjalan saat Game Mode aktif dan di Ronde 1
-    if (window.isGameMode === true && typeof currentGameRound !== 'undefined' && currentGameRound === 1) {
-        let anakKluster = cluster.getAllChildMarkers();
-        let targetDitemukan = false;
-        
-        // Periksa isi kluster, apakah target jawaban ada di dalamnya?
-        for (let i = 0; i < anakKluster.length; i++) {
-            if (targetGameData && targetGameData.mapMarkerGame && anakKluster[i] === targetGameData.mapMarkerGame) {
-                targetDitemukan = true;
-                break;
-            }
-        }
-
-        if (targetDitemukan) {
-            // Benar! Evaluasi dengan data target
-            evaluasiJawabanGame(true, targetGameData.title, targetGameData.id, targetGameData.mapMarkerGame);
-        } else {
-            // Salah! Pemain mengklik kluster di koordinat yang salah
-            // (Kita kirimkan anakKluster[0] agar peta tahu harus terbang menjauh dari sana ke jawaban benar)
-            evaluasiJawabanGame(false, "Area Titik Bertumpuk Lain", null, targetGameData.mapMarkerGame); 
-        }
-        
-        // PENTING: Hentikan fungsi di sini! Jangan lanjut ke spiderfy()
-        return; 
-    }
 	  
     if (count > 60) {
       // TIDAK PERLU cluster.unspiderfy() lagi karena dia otomatis diam.
