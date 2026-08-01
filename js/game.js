@@ -81,7 +81,7 @@ btnMulaiGame.addEventListener('click', function(e) {
     usedGameQIDs.clear();
     clearAllGameTimeouts();
 
-    // 3. UI Navigasi Mode Game
+ // 3. UI Navigasi Mode Game
     if (typeof window.setMobilePanelExpanded === 'function') window.setMobilePanelExpanded(false, false);
     const panelMobile = document.getElementById('panel');
     if (panelMobile) {
@@ -92,6 +92,10 @@ btnMulaiGame.addEventListener('click', function(e) {
     navHasil.classList.add('nav-disabled');
     navBeranda.textContent = "Batal Game"; 
     navBeranda.classList.add('text-danger'); 
+    
+    // ---> TAMBAHKAN BARIS INI: Cabut fungsi hash agar tidak memicu resetApp() <---
+    navBeranda.removeAttribute('href'); 
+
     btnMenuInduk.textContent = "Skip ⏭️";
     btnMenuInduk.classList.add('text-primary');
     document.getElementById('submenu-atas').classList.add('d-none');
@@ -515,6 +519,7 @@ function lakukanPembersihanUIGame() {
     navHasil.classList.remove('nav-disabled');
     navBeranda.textContent = "Beranda";
     navBeranda.classList.remove('text-danger');
+    navBeranda.setAttribute('href', '#');
     btnMenuInduk.textContent = "Lainnya";
     btnMenuInduk.classList.remove('text-primary');
     
