@@ -94,7 +94,7 @@ btnMulaiGame.addEventListener('click', function(e) {
     navBeranda.classList.add('text-danger'); 
     
     // ---> TAMBAHKAN BARIS INI: Cabut fungsi hash agar tidak memicu resetApp() <---
-    navBeranda.removeAttribute('href'); 
+navBeranda.setAttribute('href', 'javascript:void(0)');
 
     btnMenuInduk.textContent = "Skip ⏭️";
     btnMenuInduk.classList.add('text-primary');
@@ -436,11 +436,15 @@ function bukaPanelEksklusif(qid) {
     // 2. HIDUPKAN KEMBALI PANEL AGAR BISA DI-SCROLL
     const panelMobile = document.getElementById('panel');
     if (panelMobile) {
-        // Paksa aktifkan kembali interaksi sentuh/klik/scroll
         panelMobile.style.setProperty('pointer-events', 'auto', 'important');
         panelMobile.style.opacity = '1';
+        
+        // SUNTIKAN Z-INDEX MUTLAK VIA JS
+        panelMobile.style.setProperty('position', 'relative', 'important');
+        panelMobile.style.setProperty('z-index', '10005', 'important'); // Tembus batas!
     }
 }
+
 function tutupPanelEksklusif() {
     displayPanelContent('index'); 
     if (typeof window.setMobilePanelExpanded === 'function') {
@@ -450,9 +454,11 @@ function tutupPanelEksklusif() {
     // KEMBALIKAN KUNCIAN PANEL UNTUK RONDE BERIKUTNYA
     const panelMobile = document.getElementById('panel');
     if (panelMobile && isGameMode) {
-        // Matikan lagi fungsi scroll/klik
         panelMobile.style.setProperty('pointer-events', 'none', 'important');
         panelMobile.style.opacity = '0.5';
+        
+        // HAPUS Z-INDEX AGAR KEMBALI NORMAL
+        panelMobile.style.removeProperty('z-index');
     }
 }
 
@@ -519,7 +525,9 @@ function lakukanPembersihanUIGame() {
     navHasil.classList.remove('nav-disabled');
     navBeranda.textContent = "Beranda";
     navBeranda.classList.remove('text-danger');
-    navBeranda.setAttribute('href', '#');
+setTimeout(() => {
+        navBeranda.setAttribute('href', '#');
+    }, 50);
     btnMenuInduk.textContent = "Lainnya";
     btnMenuInduk.classList.remove('text-primary');
     
