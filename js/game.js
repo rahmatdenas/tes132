@@ -441,7 +441,7 @@ function bukaPanelEksklusif(qid) {
         
         // SUNTIKAN Z-INDEX MUTLAK VIA JS
         panelMobile.style.setProperty('position', 'relative', 'important');
-        panelMobile.style.setProperty('z-index', '10005', 'important'); // Tembus batas!
+        panelMobile.style.setProperty('z-index', '9998', 'important'); // Tembus batas!
     }
 }
 
