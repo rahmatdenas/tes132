@@ -146,45 +146,43 @@ function jalankanRonde() {
 gameClusterLayer = L.markerClusterGroup({
         maxClusterRadius: 40,
         spiderfyOnMaxZoom: false, // <--- TAMBAHAN: Matikan paksa fitur mekar!
-        zoomToBoundsOnClick: true
+zoomToBoundsOnClick: false
     });
 
     // ---> TAMBAHAN WAJIB: Event klik kluster KHUSUS layer game
-    gameClusterLayer.on('clusterclick', function (a) {
-        // Evaluasi instan kluster INI HANYA berlaku di Ronde 1
-        if (currentGameRound !== 1) return; 
+gameClusterLayer.on('clusterclick', function (a) {
+    if (currentGameRound !== 1) return; 
 
-        let cluster = a.layer;
-        let bounds = cluster.getBounds();
-        // Cek apakah koordinat semua marker di dalam kluster ini sama persis bertumpuk
-        let isSamePoint = bounds.getSouthWest().equals(bounds.getNorthEast());
-        
-        let currentZoom = Map.getZoom();
-        let maxZoom = Map.getMaxZoom();
+    let cluster = a.layer;
+    let bounds = cluster.getBounds();
+    let isSamePoint = bounds.getSouthWest().equals(bounds.getNorthEast());
+    
+    let currentZoom = Map.getZoom();
+    let maxZoom = Map.getMaxZoom();
 
-        // JIKA TITIK BERTUMPUK PERSIS (Medan 2) ATAU ZOOM MENTOK
-        if (isSamePoint || currentZoom >= maxZoom) {
-            let anakKluster = cluster.getAllChildMarkers();
-            let targetDitemukan = false;
+    // JIKA TITIK BERTUMPUK PERSIS ATAU ZOOM MENTOK -> LANGSUNG EVALUASI
+    if (isSamePoint || currentZoom >= maxZoom) {
+        let anakKluster = cluster.getAllChildMarkers();
+        let targetDitemukan = false;
 
-            // Cari apakah target jawaban ada di dalam kluster bertumpuk ini
-            for (let i = 0; i < anakKluster.length; i++) {
-                if (anakKluster[i] === targetGameData.mapMarkerGame) {
-                    targetDitemukan = true;
-                    break;
-                }
-            }
-
-            // LANGSUNG EVALUASI TANPA PERLU DIURAI (SPIDERFY)
-            if (targetDitemukan) {
-                // Jawaban Benar (Misal: Cari Mi Becek, klik kluster Medan(2), Mi Becek ada di dalam)
-                evaluasiJawabanGame(true, targetGameData.title, targetGameData.id, targetGameData.mapMarkerGame);
-            } else {
-                // Jawaban Salah (Misal: Cari Gudeg, klik kluster Medan(2), Gudeg tidak ada di dalam)
-                evaluasiJawabanGame(false, "Area Titik Bertumpuk", null, targetGameData.mapMarkerGame);
+        for (let i = 0; i < anakKluster.length; i++) {
+            if (anakKluster[i] === targetGameData.mapMarkerGame) {
+                targetDitemukan = true;
+                break;
             }
         }
-    });
+
+        if (targetDitemukan) {
+            evaluasiJawabanGame(true, targetGameData.title, targetGameData.id, targetGameData.mapMarkerGame);
+        } else {
+            evaluasiJawabanGame(false, "Area Titik Bertumpuk", null, targetGameData.mapMarkerGame);
+        }
+    } 
+    // JIKA KLASTER NORMAL (Titik Berbeda) -> LAKUKAN ZOOM-IN SECARA MANUAL
+    else {
+        Map.fitBounds(bounds, { padding: [30, 30], maxZoom: maxZoom });
+    }
+});
 
     // Ambil Data Memenuhi Syarat
     let allValid = Object.values(Records).filter(r => r.lat && r.lon && r.imageFilename);
