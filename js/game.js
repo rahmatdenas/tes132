@@ -143,9 +143,9 @@ function jalankanRonde() {
     gameDialog.style.border = "none";
 
     // Buat Layer Khusus Game
-    gameClusterLayer = L.markerClusterGroup({
+gameClusterLayer = L.markerClusterGroup({
         maxClusterRadius: 40,
-        spiderfyOnMaxZoom: true,
+        spiderfyOnMaxZoom: false, // <--- TAMBAHAN: Matikan paksa fitur mekar!
         zoomToBoundsOnClick: true
     });
 
@@ -364,7 +364,7 @@ function renderTombolPilihanGanda(options, markerTargetAsli) {
 }
 
 function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
-    if (isBenar) gameScore++; // <--- TAMBAHAN UNTUK MENGHITUNG SKOR
+    if (isBenar) gameScore++; 
     gameOverlay.classList.add('lock-screen');
     document.getElementById('game-title').textContent = isBenar ? "Tepat Sekali! 🎉" : "Sayang Sekali ❌";
     
@@ -375,38 +375,24 @@ function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
 
     gameDialog.style.border = isBenar ? "3px solid green" : "3px solid red";
 
-// --- TAMBAHAN BARU ---
-    // Masukkan marker rahasia ke peta HANYA setelah pemain selesai menjawab
+    // Masukkan marker rahasia ke peta HANYA setelah pemain selesai menjawab (Khusus Ronde 2 & 3)
     if (markerSistem && !gameClusterLayer.hasLayer(markerSistem)) {
         gameClusterLayer.addLayer(markerSistem);
     }
-    // ---------------------
     
     // Animasi Terbang
     let durasiTerbang = isBenar ? 1.5 : 2.5;
-    
-    // --- FIX BUG RACE CONDITION ---
-    // Ditambah 200ms dari durasi terbang (1500 -> 1700, 2500 -> 2700) 
-    // agar animasi peta dijamin berhenti sebelum Leaflet mencoba membuka popup
     let waktuTungguBukaPopup = isBenar ? 1700 : 2700;
 
     Map.flyTo([targetGameData.lat, targetGameData.lon], 17, { duration: durasiTerbang });
 
     let t1 = setTimeout(() => {
-        // --- FIX BUG LEAFLET MARKERCLUSTER ---
-        // Gunakan getVisibleParent untuk mengecek apakah marker sedang sembunyi di dalam kluster
-        let parent = gameClusterLayer ? gameClusterLayer.getVisibleParent(markerSistem) : null;
+        // --- PERBAIKAN TOTAL: Tanpa spiderfy, langsung buka panel dan cek popup aman ---
+        bukaPanelEksklusif(targetGameData.id);
         
-        if (parent && parent.spiderfy) {
-            // Jika ia berupa kluster (memiliki fungsi spiderfy), maka urai dulu
-            gameClusterLayer.zoomToShowLayer(markerSistem, function() {
-                markerSistem.openPopup();
-                bukaPanelEksklusif(targetGameData.id);
-            });
-        } else {
-            // Jika marker sudah berdiri sendiri di peta, langsung buka
+        let parent = gameClusterLayer ? gameClusterLayer.getVisibleParent(markerSistem) : null;
+        if (!parent || !parent.spiderfy) {
             if (markerSistem) markerSistem.openPopup();
-            bukaPanelEksklusif(targetGameData.id);
         }
 
         // Tahan 5 Detik, lalu tutup dan lanjut ronde
