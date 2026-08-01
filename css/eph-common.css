@@ -83,6 +83,9 @@ input, textarea, select {
   flex-direction: column;
   flex: 0 1 500px;
   height: 100%;
+    /* TAMBAHAN BARU UNTUK CELAH GAME */
+  position: relative; /* Wajib ada agar z-index bekerja */
+  z-index: 9999;      /* Lebih tinggi dari overlay (9998) */
 }
 
 .panel-content, 
