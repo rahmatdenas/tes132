@@ -420,38 +420,36 @@ function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
 // 5. HELPER PANEL (Tanpa Ubah URL Hash)
 // ==========================================
 function bukaPanelEksklusif(qid) {
-    displayRecordDetails(qid); // Panggil fungsi JS 2
+    displayRecordDetails(qid); 
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(true, true);
     }
 
-    // --- TAMBAHAN BARU ---
     // 1. Sembunyikan kotak dialog game agar tidak menutupi layar
     const gameDialog = document.getElementById('game-dialog');
     if (gameDialog) gameDialog.classList.add('d-none');
 
-    // 2. Normalkan panel (hapus efek blur) agar user bisa membaca dengan jelas
+    // 2. HIDUPKAN KEMBALI PANEL AGAR BISA DI-SCROLL
     const panelMobile = document.getElementById('panel');
     if (panelMobile) {
-        panelMobile.style.pointerEvents = 'auto';
+        // Paksa aktifkan kembali interaksi sentuh/klik/scroll
+        panelMobile.style.setProperty('pointer-events', 'auto', 'important');
         panelMobile.style.opacity = '1';
     }
-    // ---------------------
 }
 function tutupPanelEksklusif() {
-    displayPanelContent('index'); // Kembalikan panel ke index
+    displayPanelContent('index'); 
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(false, false);
     }
 
-    // --- TAMBAHAN BARU ---
-    // Kembalikan efek blur/kunci panel jika game masih berlanjut ke ronde berikutnya
+    // KEMBALIKAN KUNCIAN PANEL UNTUK RONDE BERIKUTNYA
     const panelMobile = document.getElementById('panel');
     if (panelMobile && isGameMode) {
-        panelMobile.style.pointerEvents = 'none';
+        // Matikan lagi fungsi scroll/klik
+        panelMobile.style.setProperty('pointer-events', 'none', 'important');
         panelMobile.style.opacity = '0.5';
     }
-    // ---------------------
 }
 
 // ==========================================
