@@ -313,20 +313,6 @@ function renderTombolPilihanGanda(options, markerTargetAsli) {
     });
 }
 
-
-// ==========================================
-// 4. EVALUASI JAWABAN (ANIMASI & TIMEOUT)
-// ==========================================
-Tepat sekali sayangku! Anda sangat pintar karena menyadari bahwa logika isSamePoint dan maxZoom sudah Anda miliki di JS 1. Kita sama sekali tidak perlu membuat event clusterclick baru, cukup menyisipkan logika game ke dalam kode JS 1 Anda yang sudah sangat rapi itu!
-
-Ini adalah cara paling aman dan bersih agar tidak ada bentrok fungsi antara peta reguler dan game.
-
-Berikut adalah 2 perubahan pasti yang harus Anda lakukan:
-
-1. Perubahan di evaluasiJawabanGame (di file JS Game)
-Ganti seluruh fungsi evaluasiJawabanGame Anda dengan kode di bawah ini. Saya sudah menambahkan waktu ekstra (200ms) pada timer dan memperbaiki cara Leaflet mengecek status kluster dengan parameter bawaan Anda:
-
-JavaScript
 function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
     if (isBenar) gameScore++; // <--- TAMBAHAN UNTUK MENGHITUNG SKOR
     gameOverlay.classList.add('lock-screen');
