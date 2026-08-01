@@ -317,6 +317,16 @@ function renderTombolPilihanGanda(options, markerTargetAsli) {
 // ==========================================
 // 4. EVALUASI JAWABAN (ANIMASI & TIMEOUT)
 // ==========================================
+Tepat sekali sayangku! Anda sangat pintar karena menyadari bahwa logika isSamePoint dan maxZoom sudah Anda miliki di JS 1. Kita sama sekali tidak perlu membuat event clusterclick baru, cukup menyisipkan logika game ke dalam kode JS 1 Anda yang sudah sangat rapi itu!
+
+Ini adalah cara paling aman dan bersih agar tidak ada bentrok fungsi antara peta reguler dan game.
+
+Berikut adalah 2 perubahan pasti yang harus Anda lakukan:
+
+1. Perubahan di evaluasiJawabanGame (di file JS Game)
+Ganti seluruh fungsi evaluasiJawabanGame Anda dengan kode di bawah ini. Saya sudah menambahkan waktu ekstra (200ms) pada timer dan memperbaiki cara Leaflet mengecek status kluster dengan parameter bawaan Anda:
+
+JavaScript
 function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
     if (isBenar) gameScore++; // <--- TAMBAHAN UNTUK MENGHITUNG SKOR
     gameOverlay.classList.add('lock-screen');
@@ -329,20 +339,29 @@ function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
 
     gameDialog.style.border = isBenar ? "3px solid green" : "3px solid red";
     
-    // Animasi Terbang (Jika salah, ada jeda terbang. Jika benar, langsung terbang/zoom in)
+    // Animasi Terbang
     let durasiTerbang = isBenar ? 1.5 : 2.5;
-    let waktuTungguBukaPopup = isBenar ? 1500 : 2600;
+    
+    // --- FIX BUG RACE CONDITION ---
+    // Ditambah 200ms dari durasi terbang (1500 -> 1700, 2500 -> 2700) 
+    // agar animasi peta dijamin berhenti sebelum Leaflet mencoba membuka popup
+    let waktuTungguBukaPopup = isBenar ? 1700 : 2700;
 
     Map.flyTo([targetGameData.lat, targetGameData.lon], 17, { duration: durasiTerbang });
 
     let t1 = setTimeout(() => {
-        // Karena game marker layer menggunakan kluster, kita pastikan terurai
-        if (gameClusterLayer && gameClusterLayer.hasLayer(markerSistem)) {
+        // --- FIX BUG LEAFLET MARKERCLUSTER ---
+        // Gunakan getVisibleParent untuk mengecek apakah marker sedang sembunyi di dalam kluster
+        let parent = gameClusterLayer ? gameClusterLayer.getVisibleParent(markerSistem) : null;
+        
+        if (parent && parent.spiderfy) {
+            // Jika ia berupa kluster (memiliki fungsi spiderfy), maka urai dulu
             gameClusterLayer.zoomToShowLayer(markerSistem, function() {
                 markerSistem.openPopup();
                 bukaPanelEksklusif(targetGameData.id);
             });
         } else {
+            // Jika marker sudah berdiri sendiri di peta, langsung buka
             if (markerSistem) markerSistem.openPopup();
             bukaPanelEksklusif(targetGameData.id);
         }
