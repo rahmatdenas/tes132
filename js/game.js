@@ -212,16 +212,28 @@ let prefix = getGamePrefix();
         gameClusterLayer.addLayer(marker);
     });
 
-    // 3. Ambil Wilayah Benar
+ // 3. Ambil Semua Wilayah Benar
     let provIdsBenar = Object.keys(targetGameData.designations).filter(p => p !== 'all' && ProvinceIndex[p] && ProvinceIndex[p].name !== 'Wilayah Lainnya/Tidak Spesifik');
-    let namaWilayahBenar = provIdsBenar.length > 0 ? ProvinceIndex[provIdsBenar[0]].name : "Wilayah Khusus";
-
-    // 4. Cari 3 Wilayah Salah (Distractor)
-    let semuaWilayahUnik = Object.keys(ProvinceIndex)
-        .filter(k => k !== 'all' && ProvinceIndex[k].name !== 'Wilayah Lainnya/Tidak Spesifik' && ProvinceIndex[k].name !== namaWilayahBenar)
-        .map(k => ProvinceIndex[k].name);
     
-    let distractors = semuaWilayahUnik.sort(() => 0.5 - Math.random()).slice(0, 3);
+    // Petakan ke nama-nama wilayahnya (Misal: ["Jawa Barat", "Jawa Timur", "Jawa Tengah"])
+    let semuaNamaWilayahBenar = provIdsBenar.map(id => ProvinceIndex[id].name);
+    
+    // Pilih HANYA 1 secara acak untuk dijadikan jawaban benar di layar
+    let namaWilayahBenar = semuaNamaWilayahBenar.length > 0 
+        ? semuaNamaWilayahBenar[Math.floor(Math.random() * semuaNamaWilayahBenar.length)] 
+        : "Wilayah Khusus";
+
+    // 4. Cari 3 Wilayah Salah (Distractor) yang PASTI SALAH
+    let semuaWilayahPengecoh = Object.keys(ProvinceIndex)
+        .filter(k => k !== 'all' && ProvinceIndex[k] && ProvinceIndex[k].name !== 'Wilayah Lainnya/Tidak Spesifik')
+        .map(k => ProvinceIndex[k].name)
+        // FILTER MUTLAK: Pastikan nama pengecoh TIDAK ADA dalam daftar wilayah yang benar
+        .filter(nama => !semuaNamaWilayahBenar.includes(nama)); 
+    
+    // Buang duplikat jika ada, lalu acak dan ambil 3
+    semuaWilayahPengecoh = [...new Set(semuaWilayahPengecoh)];
+    let distractors = semuaWilayahPengecoh.sort(() => 0.5 - Math.random()).slice(0, 3);
+    
     let options = [{ nama: namaWilayahBenar, benar: true }, ...distractors.map(d => ({ nama: d, benar: false }))];
     options.sort(() => 0.5 - Math.random());
 
@@ -406,6 +418,7 @@ function tutupPanelEksklusif() {
     }
     // ---------------------
 }
+
 // ==========================================
 // 6. MANAJEMEN TIMEOUT & AKHIRI GAME
 // ==========================================
@@ -415,15 +428,52 @@ function clearAllGameTimeouts() {
 }
 
 function akhiriGameMode(isMenang = false) {
-    isGameMode = false;
     clearAllGameTimeouts();
+    
+    // Sembunyikan kotak game
+    if (gameDialog) gameDialog.classList.add('d-none');
+
+    if (isMenang) {
+        // TAHAN KUNCIAN! Pastikan mode game masih true dan panel terkunci
+        gameOverlay.classList.add('lock-screen');
+        gameOverlay.classList.remove('d-none');
+        
+        const panelMobile = document.getElementById('panel');
+        if (panelMobile) {
+            panelMobile.style.pointerEvents = 'none';
+            panelMobile.style.opacity = '0.5';
+        }
+
+        setTimeout(() => {
+            let pesanSkor = gameScore > 0 
+                ? `Selamat! Anda menjawab benar <b>${gameScore} dari 3</b> pertanyaan!<br><br>Mau mencoba lagi?`
+                : `Anda belum berhasil menjawab pertanyaan dengan benar!<br><br>Mau mencoba lagi?`;
+            
+            // Tunggu user menjawab dialog INI sebelum mereset UI
+            tampilkanDialog(pesanSkor, "confirm", "Skor Akhir 🏆").then(mauMainLagi => {
+                // SETELAH DIJAWAB, barulah kita bersihkan kunciannya
+                lakukanPembersihanUIGame();
+                
+                if (mauMainLagi) {
+                    document.getElementById('btn-mulai-game').click();
+                }
+            });
+        }, 500);
+    } else {
+        // Jika diberhentikan paksa (Batal Game), langsung bersihkan
+        lakukanPembersihanUIGame();
+    }
+}
+
+// FUNGSI BARU: Pembersihan dipisah agar bisa dieksekusi setelah dialog ditutup
+function lakukanPembersihanUIGame() {
+    isGameMode = false; // Buka kunci navigasi hash
 
     // 1. Bersihkan UI Game
     if (gameClusterLayer) {
         Map.removeLayer(gameClusterLayer);
         gameClusterLayer = null;
     }
-    gameDialog.classList.add('d-none');
     gameOverlay.classList.remove('lock-screen');
     gameOverlay.classList.add('d-none');
     document.getElementById('game-title').textContent = "Tantangan Game!";
@@ -479,19 +529,4 @@ function akhiriGameMode(isMenang = false) {
     applyIntersectionFilter(true);
     tutupPanelEksklusif();
     Map.closePopup();
-if (isMenang) {
-        setTimeout(() => {
-            let pesanSkor = gameScore > 0 
-                ? `Selamat! Anda menjawab benar <b>${gameScore} dari 3</b> pertanyaan!<br><br>Mau mencoba lagi?`
-                : `Anda belum berhasil menjawab pertanyaan dengan benar!<br><br>Mau mencoba lagi?`;
-            
-            // Menggunakan tipe 'confirm' agar muncul tombol Ya dan Tutup/Tidak
-            tampilkanDialog(pesanSkor, "confirm", "Skor Akhir 🏆").then(mauMainLagi => {
-                if (mauMainLagi) {
-                    // Memicu klik tombol mulai game secara otomatis untuk ronde baru
-                    document.getElementById('btn-mulai-game').click();
-                }
-            });
-        }, 500);
-    }
 }
