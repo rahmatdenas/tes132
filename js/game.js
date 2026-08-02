@@ -575,11 +575,11 @@ function akhiriGameMode(isMenang = false) {
 
         setTimeout(() => {
             let pesanSkor = gameScore > 0 
-                ? `Selamat! Anda menjawab benar <b>${gameScore} dari 3</b> pertanyaan!<br><br>Mau mencoba lagi?`
-                : `Anda belum berhasil menjawab pertanyaan dengan benar!<br><br>Mau mencoba lagi?`;
+                ? `Selamat!<br>Anda menjawab benar <b>${gameScore}</b> dari <b>3</b> pertanyaan!<br>Bermain lagi?`
+                : `Anda belum berhasil menjawab pertanyaan dengan benar!<br>Bermain lagi?`;
             
             // Tunggu user menjawab dialog INI sebelum mereset UI
-            tampilkanDialog(pesanSkor, "confirm", "Skor Akhir 🏆").then(mauMainLagi => {
+            tampilkanDialog(pesanSkor, "confirm", "Skor Akhir").then(mauMainLagi => {
                 // SETELAH DIJAWAB, barulah kita bersihkan kunciannya
                 lakukanPembersihanUIGame();
                 
