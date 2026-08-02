@@ -611,6 +611,5 @@ setTimeout(() => {
 
     // 5. Render Ulang Marker Normal
     applyIntersectionFilter(true);
-    window.location.hash = 'hasil';
     Map.closePopup();
 }
