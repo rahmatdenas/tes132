@@ -522,9 +522,7 @@ function akhiriGameMode(isMenang = false) {
             });
         }, 500);
     } else {
-if (typeof window.setMobilePanelExpanded === 'function') {
-            window.setMobilePanelExpanded(false, true);
-        }
+
         
         // Jika diberhentikan paksa (Batal Game), langsung bersihkan
         lakukanPembersihanUIGame();
@@ -535,6 +533,10 @@ if (typeof window.setMobilePanelExpanded === 'function') {
 function lakukanPembersihanUIGame() {
     isGameMode = false; // Buka kunci navigasi hash
 currentDisplayedQid = null;
+        displayPanelContent('index');
+    if (typeof window.setMobilePanelExpanded === 'function') {
+        window.setMobilePanelExpanded(false, false);
+    }
 const elemenDikunci = ['panel', 'branding', 'panel-handle'];
     elemenDikunci.forEach(id => {
         let el = document.getElementById(id);
