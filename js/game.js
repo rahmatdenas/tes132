@@ -439,70 +439,44 @@ function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
 function bukaPanelEksklusif(qid) {
     displayRecordDetails(qid); 
     
-    const panelMobile = document.getElementById('panel');
-    
-    // PEMBUNUH ZOMBIE: Jika ada perintah tutup yang nyangkut, batalkan!
-    if (panelMobile && panelMobile._transitionHandler) {
-        panelMobile.removeEventListener('transitionend', panelMobile._transitionHandler);
-        panelMobile._transitionHandler = null;
-    }
-
-    // Force Reflow agar animasi naik mulus
-    if (panelMobile) void panelMobile.offsetHeight;
-    
-    // Animasi tarik ke atas
-    if (typeof window.setMobilePanelExpanded === 'function') {
-        window.setMobilePanelExpanded(true, true);
-    }
-
     const gameDialog = document.getElementById('game-dialog');
     if (gameDialog) gameDialog.classList.add('d-none');
 
+    const panelMobile = document.getElementById('panel');
     if (panelMobile) {
         panelMobile.style.setProperty('pointer-events', 'auto', 'important');
         panelMobile.style.opacity = '1';
         panelMobile.style.setProperty('z-index', '9998', 'important'); 
     }
+
+    // Beri jeda sangat sebentar agar DOM merender #details, lalu tarik panel ke atas
+    setTimeout(() => {
+        if (typeof window.setMobilePanelExpanded === 'function') {
+            window.setMobilePanelExpanded(true, true);
+        }
+    }, 50);
 }
 
 function tutupPanelEksklusif() {
-    const panelMobile = document.getElementById('panel');
-
-    if (panelMobile) {
-        // Hapus listener lama jika masih ada sisa
-        if (panelMobile._transitionHandler) {
-            panelMobile.removeEventListener('transitionend', panelMobile._transitionHandler);
-        }
-
-        // Simpan listener di memori elemen agar bisa dilacak
-        panelMobile._transitionHandler = function(e) {
-            if (e.target === panelMobile && e.propertyName === 'transform') {
-                displayPanelContent('index'); 
-                // Hapus dirinya sendiri setelah berhasil dijalankan
-                panelMobile.removeEventListener('transitionend', panelMobile._transitionHandler);
-                panelMobile._transitionHandler = null;
-            }
-        };
-
-        // Pasang pendengar animasi
-        panelMobile.addEventListener('transitionend', panelMobile._transitionHandler);
-
-        // Kunci panel untuk soal berikutnya
-        if (isGameMode) {
-            panelMobile.style.setProperty('pointer-events', 'none', 'important');
-            panelMobile.style.opacity = '1';
-            panelMobile.style.removeProperty('z-index');
-            
-            const headerBranding = document.getElementById('branding');
-            if (headerBranding) headerBranding.style.setProperty('pointer-events', 'auto', 'important');
-        }
-    }
-
-    // TARIK PANEL KE BAWAH DENGAN ANIMASI
-    // Ubah parameter kedua menjadi 'true' agar animasi menutupnya terlihat
+    // 1. Tarik panel ke bawah dengan animasi (parameter kedua "true")
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(false, true); 
     }
+
+    const panelMobile = document.getElementById('panel');
+    if (panelMobile && isGameMode) {
+        panelMobile.style.setProperty('pointer-events', 'none', 'important');
+        panelMobile.style.opacity = '1';
+        panelMobile.style.removeProperty('z-index');
+        
+        const headerBranding = document.getElementById('branding');
+        if (headerBranding) headerBranding.style.setProperty('pointer-events', 'auto', 'important');
+    }
+
+    // 2. Tunggu animasi turun selesai (sekitar 400ms), baru ganti isi ke index
+    setTimeout(() => {
+        displayPanelContent('index'); 
+    }, 400);
 }
 // ==========================================
 // 6. MANAJEMEN TIMEOUT & AKHIRI GAME
