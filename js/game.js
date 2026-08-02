@@ -82,8 +82,6 @@ btnMulaiGame.addEventListener('click', function(e) {
     clearAllGameTimeouts();
 
  // 3. UI Navigasi Mode Game
-    if (typeof window.setMobilePanelExpanded === 'function') window.setMobilePanelExpanded(false, false);
-    const panelMobile = document.getElementById('panel');
 if (typeof window.setMobilePanelExpanded === 'function') window.setMobilePanelExpanded(false, false);
     
     const panelMobile = document.getElementById('panel');
