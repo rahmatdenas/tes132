@@ -84,16 +84,24 @@ btnMulaiGame.addEventListener('click', function(e) {
  // 3. UI Navigasi Mode Game
     if (typeof window.setMobilePanelExpanded === 'function') window.setMobilePanelExpanded(false, false);
     const panelMobile = document.getElementById('panel');
-if (panelMobile) {
+if (typeof window.setMobilePanelExpanded === 'function') window.setMobilePanelExpanded(false, false);
+    
+    const panelMobile = document.getElementById('panel');
+    if (panelMobile) {
         panelMobile.style.pointerEvents = 'none'; 
-        panelMobile.style.opacity = '1'; // Sesuai revisi sebelumnya
+        panelMobile.style.opacity = '1'; 
         
-        // --- TAMBAHAN BARU: Tahan klik di area Header & Navigasi Bawah ---
+        // KUNCI HEADER AGAR TIDAK BISA DIKLIK!
         const headerBranding = document.getElementById('branding');
-        if (headerBranding) headerBranding.style.pointerEvents = 'auto';
+        if (headerBranding) headerBranding.style.pointerEvents = 'none';
         
+        // HANYA BERIKAN AKSES KLIK KE TOMBOL BATAL & SKIP
+        navBeranda.style.pointerEvents = 'auto';
+        btnMenuInduk.style.pointerEvents = 'auto';
+        
+        // (Pastikan #navigasi-utama bisa melewatkan klik ke anak-anaknya)
         const navUtama = document.getElementById('navigasi-utama');
-        if (navUtama) navUtama.style.pointerEvents = 'auto';
+        if (navUtama) navUtama.style.pointerEvents = 'none'; 
     }
     
     navHasil.classList.add('nav-disabled');
@@ -458,7 +466,6 @@ function bukaPanelEksklusif(qid) {
 }
 
 function tutupPanelEksklusif() {
-    // 1. Tarik panel ke bawah dengan animasi (parameter kedua "true")
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(false, true); 
     }
@@ -467,16 +474,17 @@ function tutupPanelEksklusif() {
     if (panelMobile && isGameMode) {
         panelMobile.style.setProperty('pointer-events', 'none', 'important');
         panelMobile.style.opacity = '1';
-        panelMobile.style.removeProperty('z-index');
+        // PERTahankan Z-INDEX: Hapus baris panelMobile.style.removeProperty('z-index');
         
+        // KUNCI HEADER
         const headerBranding = document.getElementById('branding');
-        if (headerBranding) headerBranding.style.setProperty('pointer-events', 'auto', 'important');
-        // 2. TAMBAHAN BARU: Tahan klik di area gagang/handle panel
+        if (headerBranding) headerBranding.style.setProperty('pointer-events', 'none', 'important');
+        
+        // KUNCI GAGANG PANEL AGAR TIDAK BISA DITARIK SAAT GAME
         const panelHandle = document.getElementById('panel-handle');
-        if (panelHandle) panelHandle.style.setProperty('pointer-events', 'auto', 'important');
+        if (panelHandle) panelHandle.style.setProperty('pointer-events', 'none', 'important');
     }
 
-    // 2. Tunggu animasi turun selesai (sekitar 400ms), baru ganti isi ke index
     setTimeout(() => {
         displayPanelContent('index'); 
     }, 400);
@@ -501,10 +509,21 @@ function akhiriGameMode(isMenang = false) {
         gameOverlay.classList.remove('d-none');
         
         const panelMobile = document.getElementById('panel');
-        if (panelMobile) {
-            panelMobile.style.pointerEvents = 'none';
-            panelMobile.style.opacity = '0.5';
-        }
+ if (panelMobile) {
+        panelMobile.style.pointerEvents = 'auto'; 
+        panelMobile.style.opacity = '1'; 
+        // Hapus z-index eksklusif agar kembali ke kasta normal HTML/CSS
+        panelMobile.style.removeProperty('z-index');
+    }
+
+    const headerBranding = document.getElementById('branding');
+    if (headerBranding) headerBranding.style.pointerEvents = 'auto';
+
+    const panelHandle = document.getElementById('panel-handle');
+    if (panelHandle) panelHandle.style.pointerEvents = 'auto';
+
+    const navUtama = document.getElementById('navigasi-utama');
+    if (navUtama) navUtama.style.pointerEvents = 'auto';
 
         setTimeout(() => {
             let pesanSkor = gameScore > 0 
