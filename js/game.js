@@ -471,6 +471,9 @@ function tutupPanelEksklusif() {
         
         const headerBranding = document.getElementById('branding');
         if (headerBranding) headerBranding.style.setProperty('pointer-events', 'auto', 'important');
+        // 2. TAMBAHAN BARU: Tahan klik di area gagang/handle panel
+        const panelHandle = document.getElementById('panel-handle');
+        if (panelHandle) panelHandle.style.setProperty('pointer-events', 'auto', 'important');
     }
 
     // 2. Tunggu animasi turun selesai (sekitar 400ms), baru ganti isi ke index
