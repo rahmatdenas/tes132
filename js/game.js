@@ -522,6 +522,10 @@ function akhiriGameMode(isMenang = false) {
             });
         }, 500);
     } else {
+if (typeof window.setMobilePanelExpanded === 'function') {
+            window.setMobilePanelExpanded(false, true);
+        }
+        
         // Jika diberhentikan paksa (Batal Game), langsung bersihkan
         lakukanPembersihanUIGame();
     }
