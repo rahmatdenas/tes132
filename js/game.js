@@ -1,8 +1,5 @@
 'use strict';
 
-// ==========================================
-// 1. GLOBAL STATE & REFERENSI DOM
-// ==========================================
 let isGameMode = false;
 let currentGameRound = 1; // Maksimal 3
 let gameTimeouts = []; // Array untuk menampung ID setTimeout
