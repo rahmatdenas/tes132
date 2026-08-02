@@ -1246,10 +1246,11 @@ function generateRecordDetails(qid) {
     }
   }
 
-  let infoLokasiHtml = '';
+let infoLokasiHtml = '';
   if (record.lat && record.lon) {
     let mapsUrl = `https://www.google.com/maps?q=${record.lat},${record.lon}`;
-    infoLokasiHtml = `<p class="koordinat-link">${prefixLokasi}: <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" title="Buka di Google Maps">${namaLokasi}</a></p>`;
+    // Tambahkan class 'link-peta-dialog' dan simpan data URL serta nama lokasi
+    infoLokasiHtml = `<p class="koordinat-link">${prefixLokasi}: <a href="#" class="link-peta-dialog" data-url="${mapsUrl}" data-lokasi="${namaLokasi}" title="Buka di Google Maps">${namaLokasi}</a></p>`;
   } else {
     infoLokasiHtml = 
       `<p class="koordinat-link">${prefixLokasi}: ${namaLokasi}</p>` +
@@ -1283,6 +1284,28 @@ function generateRecordDetails(qid) {
   record.panelElem = panelElem;
 
   if (record.articleTitle) displayArticleExtract(record.articleTitle, panelElem.querySelector('.article'));
+
+  // --- MULAI PENAMBAHAN KODE DIALOG PETA TAMBHAAN GOOGLE FLASH LITE SI OON ---
+  let linkPeta = panelElem.querySelector('.link-peta-dialog');
+  if (linkPeta) {
+    linkPeta.addEventListener('click', function(e) {
+      e.preventDefault(); // Mencegah halaman melompat ke atas karena href="#"
+      
+      let urlTujuan = this.getAttribute('data-url');
+      let namaTujuan = this.getAttribute('data-lokasi');
+      
+      // Memanggil fungsi dialog kustom dari JS 1
+      tampilkanDialog(`Dapat petunjuk arah menuju <strong>${namaTujuan}</strong>?`, 'confirm', 'Buka Google Maps di tab baru?')
+        .then(yakin => {
+          if (yakin) {
+            // Jika pengguna klik [Ya], buka tab baru
+            window.open(urlTujuan, '_blank', 'noopener,noreferrer');
+          }
+          // Jika batal, tidak terjadi apa-apa
+        });
+    });
+  }
+  
   queryOsm(qid);
 }
 
