@@ -1295,7 +1295,7 @@ let infoLokasiHtml = '';
       let namaTujuan = this.getAttribute('data-lokasi');
       
       // Memanggil fungsi dialog kustom dari JS 1
-      tampilkanDialog(`Dapat petunjuk arah menuju <strong>${namaTujuan}</strong>?`, 'confirm', 'Buka Google Maps di tab baru?')
+      tampilkanDialog(`Petunjuk arah menuju ${namaTujuan}`, 'confirm', 'Buka Google Maps di tab baru?')
         .then(yakin => {
           if (yakin) {
             // Jika pengguna klik [Ya], buka tab baru
