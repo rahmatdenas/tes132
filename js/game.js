@@ -430,7 +430,8 @@ gameMessage.innerHTML = `
 function renderTombolPilihanGanda(options, markerTargetAsli) {
     let htmlTombol = `<div class="game-options-grid mt-10" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">`;
     options.forEach((opt, idx) => {
-        htmlTombol += `<button class="btn-game-option" data-benar="${opt.benar}" data-nama="${opt.nama}" style="padding:10px; border:1px solid #ccc; background:#f9f9f9; border-radius:5px; cursor:pointer; font-size:13px; font-weight:bold;">${opt.nama}</button>`;
+        // Tambahkan transisi biar hovernya lebih halus (transition:all 0.2s ease)
+        htmlTombol += `<button class="btn-game-option" data-benar="${opt.benar}" data-nama="${opt.nama}" style="padding:10px; border:2px solid #ccc; background:#f9f9f9; border-radius:5px; cursor:pointer; font-size:13px; font-weight:bold; transition:all 0.2s ease;">${opt.nama}</button>`;
     });
     htmlTombol += `</div>`;
     
@@ -442,16 +443,17 @@ function renderTombolPilihanGanda(options, markerTargetAsli) {
             let isBenar = this.getAttribute('data-benar') === 'true';
             let namaDiklik = this.getAttribute('data-nama');
             
-            // Matikan tombol agar tidak di-spam klik
-            buttons.forEach(b => b.disabled = true);
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.style.cursor = 'default'; // Matikan kursor pointer setelah diklik
+            });
             
-            // Jika salah, warnai yang benar dengan hijau agar user tahu
             if (!isBenar) {
-                this.style.background = "#ffcccc";
+                this.style.background = "#ffcccc"; // Background Merah Muda
                 this.style.borderColor = "red";
                 let btnBenar = gameMessage.querySelector('.btn-game-option[data-benar="true"]');
                 if(btnBenar) {
-                    btnBenar.style.background = "#ccffcc";
+                    btnBenar.style.background = "#ccffcc"; // Background Hijau Muda
                     btnBenar.style.borderColor = "green";
                 }
             } else {
@@ -461,6 +463,21 @@ function renderTombolPilihanGanda(options, markerTargetAsli) {
 
             evaluasiJawabanGame(isBenar, namaDiklik, targetGameData.id, markerTargetAsli);
         });
+
+        // --- TAMBAHAN: EFEK HOVER JS UNTUK GAME 3 ---
+        btn.addEventListener('mouseover', function() {
+            if (!this.disabled) {
+                this.style.borderColor = "#337ab7"; // Border berubah jadi biru
+                this.style.background = "#e6f0f9"; // Background jadi biru sangat muda
+            }
+        });
+        btn.addEventListener('mouseout', function() {
+            if (!this.disabled) {
+                this.style.borderColor = "#ccc"; // Kembali ke warna awal
+                this.style.background = "#f9f9f9"; // Kembali ke warna awal
+            }
+        });
+        // --------------------------------------------
     });
 }
 
