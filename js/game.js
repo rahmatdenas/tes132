@@ -308,7 +308,7 @@ function setupGame2() {
 
 function renderPilihanGandaGambar(options, markerTargetAsli) {
     // Kembalikan ke 1fr 1fr agar melebar otomatis menyesuaikan kotak sistem
-    let htmlTombol = `<div class="game-options-grid-img mt-10" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
+    let htmlTombol = `<div class="game-options-grid-img mt-15" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
     
     options.forEach((opt) => {
         let imgUrl = `${COMMONS_WIKI_URL_PREF}Special:FilePath/${encodeURIComponent(opt.image)}?width=250`;
