@@ -1,6 +1,3 @@
-.lock-screen {
-    pointer-events: auto !important; /* Menahan klik agar tidak tembus ke peta */
-}
 /* ==========================================================================
    1. PENGATURAN DASAR & UTILITAS (OPTIMALISASI SELULER KETAT)
    ========================================================================== */
@@ -879,4 +876,63 @@ select option:disabled {
   font-size: 11px;
   font-weight: 600;
   text-align: center;
+}
+
+/* ==========================================================================
+   12. UI MODE GAME (Eksklusif)
+   ========================================================================== */
+/* Selimut Hitam (Berada di Bawah Panel (9999), di Atas Peta (400)) */
+#game-overlay {
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  z-index: 9997; 
+  transition: background 0.3s ease;
+}
+
+/* Ronde 1: Tembus Pandang & Klik Tembus ke Peta */
+#game-overlay.ronde-1 {
+  background: transparent;
+  pointer-events: none; 
+}
+
+/* Ronde 2 & 3: Selimut Hitam & Tahan Klik ke Peta */
+#game-overlay.ronde-lanjut {
+  background: rgba(0, 0, 0, 0.8);
+  pointer-events: auto; 
+}
+
+/* Mengunci Layar Peta Secara Total Saat Evaluasi/Akhir Game */
+#game-overlay.lock-screen {
+  pointer-events: auto !important; 
+}
+
+/* Kotak Dialog Game (Kasta Tertinggi: 10000) */
+#game-dialog {
+  position: fixed; 
+  top: 12%; left: 50%; 
+  transform: translateX(-50%); 
+  z-index: 10000; 
+  background: white; 
+  padding: 20px; 
+  border-radius: 10px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+  text-align: center; 
+  width: 80%; 
+  max-width: 400px; 
+  max-height: 80vh; 
+  overflow-y: auto;
+}
+
+#game-dialog h3 { margin: 0 0 10px 0; }
+#game-dialog p { margin: 0; font-size: 16px; }
+
+/* KUNCI OTORITAS: Melumpuhkan semua interaksi kursor */
+.terkunci-game {
+  pointer-events: none !important;
+}
+
+/* Pengecualian agar tombol Batal & Lewati tetap bisa dipencet */
+.tombol-kebal-game {
+  pointer-events: auto !important;
 }
