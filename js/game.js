@@ -315,9 +315,10 @@ let imgUrl = `${COMMONS_WIKI_URL_PREF}Special:FilePath/${encodeURIComponent(targ
         tanyaNama = `Siapa nama tokoh ini?`;
     }
 
-    gameMessage.innerHTML = `
+gameMessage.innerHTML = `
         ${tanyaNama}<br>
-        <img src="${imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin-top:10px; border:2px solid #ddd;">
+        <img src="${imgUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin-top:10px; border:2px solid #ddd; cursor:pointer;" 
+        title="Klik untuk memperbesar">
     `;
 
 
