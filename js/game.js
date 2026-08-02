@@ -82,24 +82,31 @@ btnMulaiGame.addEventListener('click', function(e) {
     clearAllGameTimeouts();
 
  // 3. UI Navigasi Mode Game
-if (typeof window.setMobilePanelExpanded === 'function') window.setMobilePanelExpanded(false, false);
+// 3. UI Navigasi Mode Game
+    if (typeof window.setMobilePanelExpanded === 'function') {
+        window.setMobilePanelExpanded(false, false);
+    }
     
-    const panelMobile = document.getElementById('panel');
-    if (panelMobile) {
-        panelMobile.style.pointerEvents = 'none'; 
-        panelMobile.style.opacity = '1'; 
-        
-        // KUNCI HEADER AGAR TIDAK BISA DIKLIK!
-        const headerBranding = document.getElementById('branding');
-        if (headerBranding) headerBranding.style.pointerEvents = 'none';
-        
-        // HANYA BERIKAN AKSES KLIK KE TOMBOL BATAL & SKIP
-        navBeranda.style.pointerEvents = 'auto';
-        btnMenuInduk.style.pointerEvents = 'auto';
-        
-        // (Pastikan #navigasi-utama bisa melewatkan klik ke anak-anaknya)
-        const navUtama = document.getElementById('navigasi-utama');
-        if (navUtama) navUtama.style.pointerEvents = 'none'; 
+    // 🛡️ PASANG TAMENG DENGAN 1 BARIS (Header, Panel, dan Gagang)
+    const elemenDikunci = ['panel', 'branding', 'panel-handle'];
+    elemenDikunci.forEach(id => {
+        let el = document.getElementById(id);
+        if (el) el.classList.add('tameng-game');
+    });
+
+    // 🎯 KECUALIKAN TOMBOL NAVIGASI BATAL & SKIP
+    // Karena elemen ini terpisah (di luar #panel), kita atur manual agar tetap bisa dipencet
+    const navUtama = document.getElementById('navigasi-utama');
+    if (navUtama) navUtama.style.setProperty('pointer-events', 'none', 'important'); 
+    
+    if (navBeranda) {
+        navBeranda.style.setProperty('pointer-events', 'auto', 'important');
+        if (navBeranda.parentElement) navBeranda.parentElement.style.setProperty('pointer-events', 'auto', 'important');
+    }
+    
+    if (btnMenuInduk) {
+        btnMenuInduk.style.setProperty('pointer-events', 'auto', 'important');
+        if (btnMenuInduk.parentElement) btnMenuInduk.parentElement.style.setProperty('pointer-events', 'auto', 'important');
     }
     
     navHasil.classList.add('nav-disabled');
@@ -467,22 +474,8 @@ function tutupPanelEksklusif() {
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(false, true); 
     }
-
-    const panelMobile = document.getElementById('panel');
-    if (panelMobile && isGameMode) {
-        panelMobile.style.setProperty('pointer-events', 'none', 'important');
-        panelMobile.style.opacity = '1';
-        // PERTahankan Z-INDEX: Hapus baris panelMobile.style.removeProperty('z-index');
-        
-        // KUNCI HEADER
-        const headerBranding = document.getElementById('branding');
-        if (headerBranding) headerBranding.style.setProperty('pointer-events', 'none', 'important');
-        
-        // KUNCI GAGANG PANEL AGAR TIDAK BISA DITARIK SAAT GAME
-        const panelHandle = document.getElementById('panel-handle');
-        if (panelHandle) panelHandle.style.setProperty('pointer-events', 'none', 'important');
-    }
-
+    // HAPUS SEMUA logika pointer-events di sini! Panel sudah aman karena class .tameng-game.
+    
     setTimeout(() => {
         displayPanelContent('index'); 
     }, 400);
@@ -508,20 +501,10 @@ function akhiriGameMode(isMenang = false) {
         
         const panelMobile = document.getElementById('panel');
  if (panelMobile) {
-        panelMobile.style.pointerEvents = 'auto'; 
         panelMobile.style.opacity = '1'; 
         // Hapus z-index eksklusif agar kembali ke kasta normal HTML/CSS
         panelMobile.style.removeProperty('z-index');
     }
-
-    const headerBranding = document.getElementById('branding');
-    if (headerBranding) headerBranding.style.pointerEvents = 'auto';
-
-    const panelHandle = document.getElementById('panel-handle');
-    if (panelHandle) panelHandle.style.pointerEvents = 'auto';
-
-    const navUtama = document.getElementById('navigasi-utama');
-    if (navUtama) navUtama.style.pointerEvents = 'auto';
 
         setTimeout(() => {
             let pesanSkor = gameScore > 0 
@@ -548,6 +531,26 @@ function akhiriGameMode(isMenang = false) {
 function lakukanPembersihanUIGame() {
     isGameMode = false; // Buka kunci navigasi hash
 
+const elemenDikunci = ['panel', 'branding', 'panel-handle'];
+    elemenDikunci.forEach(id => {
+        let el = document.getElementById(id);
+        if (el) el.classList.remove('tameng-game');
+    });
+
+    // Bersihkan sisa inline style dari tombol Batal & Skip
+    const navUtama = document.getElementById('navigasi-utama');
+    if (navUtama) navUtama.style.removeProperty('pointer-events');
+
+    if (navBeranda) {
+        navBeranda.style.removeProperty('pointer-events');
+        if (navBeranda.parentElement) navBeranda.parentElement.style.removeProperty('pointer-events');
+    }
+    
+    if (btnMenuInduk) {
+        btnMenuInduk.style.removeProperty('pointer-events');
+        if (btnMenuInduk.parentElement) btnMenuInduk.parentElement.style.removeProperty('pointer-events');
+    }
+    
     // 1. Bersihkan UI Game
     if (gameClusterLayer) {
         Map.removeLayer(gameClusterLayer);
@@ -573,7 +576,6 @@ setTimeout(() => {
     // 3. Buka Kunci Mobile Panel
     const panelMobile = document.getElementById('panel'); 
     if (panelMobile) {
-        panelMobile.style.pointerEvents = 'auto'; 
         panelMobile.style.opacity = '1'; 
     }
     
