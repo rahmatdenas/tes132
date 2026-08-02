@@ -1195,8 +1195,7 @@ window.addEventListener('load', function() {
   let linkElem = document.getElementById('lightbox-link');
 
   document.addEventListener('click', function(e) {
-    let targetImg = e.target.closest('#details figure img, .leaflet-popup-content img');
-    
+let targetImg = e.target.closest('#details figure img, .leaflet-popup-content img, #game-message img');    
     if (targetImg) {
       e.preventDefault(); 
 
@@ -1220,6 +1219,15 @@ window.addEventListener('load', function() {
 
       imgElem.src = srcGambar;
       linkElem.href = linkKeCommons || '#'; 
+
+// 2. LOGIKA BARU: SEMBUNYIKAN LINK JIKA GAMBAR DARI GAME
+      if (targetImg.closest('#game-message')) {
+          linkElem.classList.add('d-none'); // Hilangkan tombol/link
+      } else {
+          linkElem.classList.remove('d-none'); // Munculkan kembali untuk panel arsip normal
+      }
+
+		
       lightbox.classList.add('aktif');
 
       window.history.pushState({ dalamLightbox: true }, null, window.location.href);
