@@ -116,7 +116,7 @@ btnMulaiGame.addEventListener('click', function(e) {
     // ---> TAMBAHKAN BARIS INI: Cabut fungsi hash agar tidak memicu resetApp() <---
 navBeranda.setAttribute('href', 'javascript:void(0)');
 
-    btnMenuInduk.textContent = "Lewati Soal";
+    btnMenuInduk.textContent = "Lewati";
     btnMenuInduk.classList.add('text-primary');
     document.getElementById('submenu-atas').classList.add('d-none');
 
