@@ -84,9 +84,16 @@ btnMulaiGame.addEventListener('click', function(e) {
  // 3. UI Navigasi Mode Game
     if (typeof window.setMobilePanelExpanded === 'function') window.setMobilePanelExpanded(false, false);
     const panelMobile = document.getElementById('panel');
-    if (panelMobile) {
+if (panelMobile) {
         panelMobile.style.pointerEvents = 'none'; 
-        panelMobile.style.opacity = '0.5'; 
+        panelMobile.style.opacity = '1'; // Sesuai revisi sebelumnya
+        
+        // --- TAMBAHAN BARU: Tahan klik di area Header & Navigasi Bawah ---
+        const headerBranding = document.getElementById('branding');
+        if (headerBranding) headerBranding.style.pointerEvents = 'auto';
+        
+        const navUtama = document.getElementById('navigasi-utama');
+        if (navUtama) navUtama.style.pointerEvents = 'auto';
     }
     
     navHasil.classList.add('nav-disabled');
@@ -143,6 +150,12 @@ function jalankanRonde() {
     
     gameDialog.classList.remove('d-none');
     gameOverlay.classList.remove('lock-screen', 'd-none');
+    // --- TAMBAHAN UNTUK LATAR HITAM RONDE 2 & 3 ---
+    if (currentGameRound === 1) {
+        gameOverlay.style.background = 'transparent'; 
+    } else {
+        gameOverlay.style.background = 'rgba(0, 0, 0, 0.8)'; // Efek Lightbox
+    }
     document.getElementById('game-title').textContent = `Tantangan ${currentGameRound}/3`;
     gameDialog.style.border = "none";
 
@@ -424,43 +437,60 @@ function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
 // 5. HELPER PANEL (Tanpa Ubah URL Hash)
 // ==========================================
 function bukaPanelEksklusif(qid) {
+    // 1. Render konten ke DOM (menghapus d-none dari #details)
     displayRecordDetails(qid); 
+    
+    const panelMobile = document.getElementById('panel');
+    
+    // 2. FORCE REFLOW (TANPA TIMEOUT): 
+    // Membaca property ini memaksa browser memproses DOM saat ini juga
+    if (panelMobile) void panelMobile.offsetHeight;
+    
+    // 3. Jalankan animasi tarik ke atas
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(true, true);
     }
 
-    // 1. Sembunyikan kotak dialog game agar tidak menutupi layar
     const gameDialog = document.getElementById('game-dialog');
     if (gameDialog) gameDialog.classList.add('d-none');
 
-    // 2. HIDUPKAN KEMBALI PANEL AGAR BISA DI-SCROLL
-    const panelMobile = document.getElementById('panel');
     if (panelMobile) {
         panelMobile.style.setProperty('pointer-events', 'auto', 'important');
         panelMobile.style.opacity = '1';
-        
-        // SUNTIKAN Z-INDEX MUTLAK VIA JS
-        panelMobile.style.setProperty('z-index', '9998', 'important'); // Tembus batas!
+        panelMobile.style.setProperty('z-index', '9998', 'important'); 
     }
 }
 
 function tutupPanelEksklusif() {
-    displayPanelContent('index'); 
+    const panelMobile = document.getElementById('panel');
+
+    // 1. Tarik panel ke bawah terlebih dahulu (mulai animasi)
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(false, false);
     }
 
-    // KEMBALIKAN KUNCIAN PANEL UNTUK RONDE BERIKUTNYA
-    const panelMobile = document.getElementById('panel');
-    if (panelMobile && isGameMode) {
-        panelMobile.style.setProperty('pointer-events', 'none', 'important');
-        panelMobile.style.opacity = '0.5';
-        
-        // HAPUS Z-INDEX AGAR KEMBALI NORMAL
-        panelMobile.style.removeProperty('z-index');
+    if (panelMobile) {
+        // 2. EVENT LISTENER (TANPA TIMEOUT): 
+        // Tunggu sampai animasi CSS benar-benar selesai
+        panelMobile.addEventListener('transitionend', function handler(e) {
+            // Pastikan kita hanya bereaksi saat animasi posisi (transform) selesai
+            if (e.propertyName === 'transform') {
+                displayPanelContent('index'); // Sembunyikan #details, munculkan #index
+                panelMobile.removeEventListener('transitionend', handler); // Hapus pendengar agar tidak bocor
+            }
+        });
+
+        // 3. Kunci panel untuk soal berikutnya (Opacity 1 sesuai permintaan sebelumnya)
+        if (isGameMode) {
+            panelMobile.style.setProperty('pointer-events', 'none', 'important');
+            panelMobile.style.opacity = '1';
+            panelMobile.style.removeProperty('z-index');
+// Tahan klik di header & navigasi
+            const headerBranding = document.getElementById('branding');
+            if (headerBranding) headerBranding.style.setProperty('pointer-events', 'auto', 'important');
+        }
     }
 }
-
 // ==========================================
 // 6. MANAJEMEN TIMEOUT & AKHIRI GAME
 // ==========================================
