@@ -533,10 +533,6 @@ function akhiriGameMode(isMenang = false) {
 function lakukanPembersihanUIGame() {
     isGameMode = false; // Buka kunci navigasi hash
 currentDisplayedQid = null;
-        displayPanelContent('index');
-    if (typeof window.setMobilePanelExpanded === 'function') {
-        window.setMobilePanelExpanded(false, false);
-    }
 const elemenDikunci = ['panel', 'branding', 'panel-handle'];
     elemenDikunci.forEach(id => {
         let el = document.getElementById(id);
@@ -618,4 +614,9 @@ setTimeout(() => {
     // 5. Render Ulang Marker Normal
     applyIntersectionFilter(true);
     Map.closePopup();
+    
+    displayPanelContent('index');
+    if (typeof window.setMobilePanelExpanded === 'function') {
+        window.setMobilePanelExpanded(false, false);
+    }
 }
