@@ -269,11 +269,8 @@ function setupGame1() {
 // GAME 2: Tebak Wilayah (Pilihan Ganda)
 // ------------------------------------------
 function setupGame2() {
-    let prefix = getGamePrefix();
-    // Sesuaikan kata tanya, karena fokusnya sekarang "Manakah rupa/bentuk dari..."
-    let kataTanya = (prefix === 'tempat lahir') ? 'sosok' : 'wujud/ilustrasi';
-    
-    gameMessage.innerHTML = `Manakah ${kataTanya} yang merupakan:<br><strong style="font-size:20px; color:#d9534f;">${targetGameData.title}</strong>?`;
+    // Teks pertanyaan disederhanakan agar cocok untuk semua kategori
+    gameMessage.innerHTML = `Manakah yang menggambarkan/foto dari:<br><strong style="font-size:20px; color:#d9534f;">${targetGameData.title}</strong>?`;
     
     // 1. Siapkan Opsi Benar
     let opsiBenar = { 
@@ -305,7 +302,7 @@ function setupGame2() {
     // 4. Siapkan Marker Rahasia untuk animasi terbang nanti
     let markerRahasia = L.marker([targetGameData.lat, targetGameData.lon], { icon: ikonTetesanAir });
     
-    // 5. Panggil Helper Render (Logika render berbeda dengan Game 3 karena ini Grid Gambar)
+    // 5. Panggil Helper Render 
     renderPilihanGandaGambar(options, markerRahasia);
 }
 
@@ -476,7 +473,7 @@ if (currentGameRound === 1) {
     } 
     // --- TAMBAHAN UNTUK GAME 2 GAMBAR ---
     else if (currentGameRound === 2) {
-        if (isBenar) gameMessage.innerHTML = `Tepat! Ini adalah wujud dari <strong>${targetGameData.title}</strong>.`;
+        if (isBenar) gameMessage.innerHTML = `Tepat! Ini adalah foto/gambaran dari <strong>${targetGameData.title}</strong>.`;
         else gameMessage.innerHTML = `Sayang sekali, gambar yang Anda pilih adalah <strong>${titleDiklik}</strong>.<br>Mengarahkan ke lokasi ${targetGameData.title}...`;
     }
 
