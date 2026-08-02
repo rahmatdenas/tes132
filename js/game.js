@@ -310,74 +310,58 @@ function setupGame2() {
 }
 
 function renderPilihanGandaGambar(options, markerTargetAsli) {
-    // Gunakan aspect-ratio 1/1 (kotak) agar rapi dalam grid
-    let htmlTombol = `<div class="game-options-grid-img mt-10" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:400px; margin-left:auto; margin-right:auto;">`;
+    // Kembalikan ke 1fr 1fr agar melebar otomatis menyesuaikan kotak sistem
+    let htmlTombol = `<div class="game-options-grid-img mt-10" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
     
     options.forEach((opt) => {
-        // Request ukuran kecil saja (misal 250px) agar loading cepat
         let imgUrl = `${COMMONS_WIKI_URL_PREF}Special:FilePath/${encodeURIComponent(opt.image)}?width=250`;
         
+        // Width dibuat 100% (mengikuti kolom grid), Height dikunci di 110px (atau 100px sesuai selera)
         htmlTombol += `
             <button class="btn-game-option-img" 
                     data-benar="${opt.benar}" 
                     data-title="${opt.title.replace(/"/g, '&quot;')}" 
-                    style="padding:0; border:4px solid #ddd; background:#fff; border-radius:8px; cursor:pointer; overflow:hidden; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease;">
-                <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;" alt="Pilihan Gambar">
+                    style="padding:0; border:3px solid #ddd; background:#fff; border-radius:8px; cursor:pointer; overflow:hidden; width:100%; height:110px; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease;">
+                <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" alt="Pilihan Gambar">
             </button>`;
     });
     htmlTombol += `</div>`;
     
     gameMessage.insertAdjacentHTML('beforeend', htmlTombol);
 
-    // Ambil semua tombol yang baru dibuat
     let buttons = gameMessage.querySelectorAll('.btn-game-option-img');
     buttons.forEach(btn => {
         btn.addEventListener('click', function() {
             let isBenar = this.getAttribute('data-benar') === 'true';
             let titleDiklik = this.getAttribute('data-title');
             
-            // Matikan tombol agar tidak di-spam klik & hilangkan efek hover pointer
             buttons.forEach(b => {
                 b.disabled = true;
                 b.style.cursor = 'default';
             });
             
-            // Beri umpan balik visual pada border tombol
             if (!isBenar) {
-                // Salah: Border Merah pada yang diklik
                 this.style.borderColor = "#d9534f"; // Merah
-                this.style.boxShadow = "0 0 10px rgba(217, 83, 79, 0.5)";
-                
-                // Cari yang benar, beri border Hijau
+                this.style.boxShadow = "0 0 8px rgba(217, 83, 79, 0.5)";
                 let btnBenar = gameMessage.querySelector('.btn-game-option-img[data-benar="true"]');
                 if(btnBenar) {
                     btnBenar.style.borderColor = "#5cb85c"; // Hijau
-                    btnBenar.style.boxShadow = "0 0 10px rgba(92, 184, 92, 0.5)";
+                    btnBenar.style.boxShadow = "0 0 8px rgba(92, 184, 92, 0.5)";
                 }
             } else {
-                // Benar: Border Hijau pada yang diklik
                 this.style.borderColor = "#5cb85c";
-                this.style.boxShadow = "0 0 10px rgba(92, 184, 92, 0.5)";
+                this.style.boxShadow = "0 0 8px rgba(92, 184, 92, 0.5)";
             }
 
-            // Lanjut ke evaluasi (terbang ke peta, dst)
-            // Kita kirim titleDiklik agar jika salah, sistem bisa bilang "Anda memilih [Gambar A]"
             evaluasiJawabanGame(isBenar, titleDiklik, targetGameData.id, markerTargetAsli);
         });
         
-        // Efek Hover via JS (karena susah pakai pseudo-class di inline style)
+        // EFEK HOVER
         btn.addEventListener('mouseover', function() {
-            if (!this.disabled) this.style.borderColor = "#337ab7"; // Biru primary
+            if (!this.disabled) this.style.borderColor = "#337ab7"; 
         });
         btn.addEventListener('mouseout', function() {
-            if (!this.disabled && this.getAttribute('data-selected') !== 'true') {
-                 // Kembalikan ke warna border dasar jika tidak sedang dipilih/salah/benar
-                 let isBenarAttr = this.getAttribute('data-benar');
-                 // Jika belum dievaluasi (belum ada border merah/hijau mentok)
-                 if (getComputedStyle(this).borderColor === 'rgb(51, 122, 183)') {
-                     this.style.borderColor = "#ddd";
-                 }
-            }
+            if (!this.disabled) this.style.borderColor = "#ddd"; 
         });
     });
 }
