@@ -245,7 +245,7 @@ function setupGame1() {
     let prefix = getGamePrefix();
     let kataTanya = (prefix === 'letak' || prefix === 'lokasi sekarang') ? 'lokasi' : prefix;
     
-    gameMessage.innerHTML = `Temukan di peta ${kataTanya}:<br><strong style="font-size:20px; color:#d9534f;">${targetGameData.title}</strong>?`;
+    gameMessage.innerHTML = `Temukan di peta ${kataTanya}:<br><strong style="color:#d9534f;">${targetGameData.title}</strong>?`;
     
     // Peta bisa diklik
     poolGameData.forEach(record => {
@@ -270,7 +270,7 @@ function setupGame1() {
 // ------------------------------------------
 function setupGame2() {
     // Teks pertanyaan disederhanakan agar cocok untuk semua kategori
-    gameMessage.innerHTML = `Manakah yang menggambarkan/foto dari:<br><strong style="font-size:20px; color:#d9534f;">${targetGameData.title}</strong>?`;
+    gameMessage.innerHTML = `Manakah yang menggambarkan/foto dari:<br><strong style="color:#d9534f;">${targetGameData.title}</strong>?`;
     
     // 1. Siapkan Opsi Benar
     let opsiBenar = { 
@@ -412,7 +412,7 @@ function renderTombolPilihanGanda(options, markerTargetAsli) {
     let htmlTombol = `<div class="game-options-grid mt-10" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">`;
     options.forEach((opt, idx) => {
         // Tambahkan transisi biar hovernya lebih halus (transition:all 0.2s ease)
-        htmlTombol += `<button class="btn-game-option" data-benar="${opt.benar}" data-nama="${opt.nama}" style="padding:10px; border:2px solid #ccc; background:#f9f9f9; border-radius:5px; cursor:pointer; font-size:13px; font-weight:bold; transition:all 0.2s ease;">${opt.nama}</button>`;
+        htmlTombol += `<button class="btn-game-option" data-benar="${opt.benar}" data-nama="${opt.nama}" style="padding:10px; border:2px solid #ccc; background:#f9f9f9; border-radius:5px; cursor:pointer; transition:all 0.2s ease;">${opt.nama}</button>`;
     });
     htmlTombol += `</div>`;
     
@@ -473,8 +473,8 @@ if (currentGameRound === 1) {
     } 
     // --- TAMBAHAN UNTUK GAME 2 GAMBAR ---
     else if (currentGameRound === 2) {
-        if (isBenar) gameMessage.innerHTML = `Tepat! Ini adalah foto/gambaran dari <strong>${targetGameData.title}</strong>.`;
-        else gameMessage.innerHTML = `Sayang sekali, gambar yang Anda pilih adalah <strong>${titleDiklik}</strong>.<br>Mengarahkan ke lokasi ${targetGameData.title}...`;
+        if (isBenar) gameMessage.innerHTML = `Tepat sekali! Kamu memilih <strong>${targetGameData.title}</strong>.`;
+        else gameMessage.innerHTML = `Sayang sekali, gambar yang kamu pilih adalah <strong>${titleDiklik}</strong>.<br>Mengarahkan ke lokasi ${targetGameData.title}...`;
     }
 
     gameDialog.style.border = isBenar ? "3px solid green" : "3px solid red";
