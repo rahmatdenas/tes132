@@ -530,7 +530,7 @@ function akhiriGameMode(isMenang = false) {
 // FUNGSI BARU: Pembersihan dipisah agar bisa dieksekusi setelah dialog ditutup
 function lakukanPembersihanUIGame() {
     isGameMode = false; // Buka kunci navigasi hash
-
+currentDisplayedQid = null;
 const elemenDikunci = ['panel', 'branding', 'panel-handle'];
     elemenDikunci.forEach(id => {
         let el = document.getElementById(id);
@@ -611,6 +611,5 @@ setTimeout(() => {
 
     // 5. Render Ulang Marker Normal
     applyIntersectionFilter(true);
-    window.location.hash = 'hasil';
     Map.closePopup();
 }
