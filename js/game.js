@@ -245,7 +245,7 @@ function setupGame1() {
     let prefix = getGamePrefix();
     let kataTanya = (prefix === 'letak' || prefix === 'lokasi sekarang') ? 'lokasi' : prefix;
     
-    gameMessage.innerHTML = `Temukan di peta ${kataTanya}:<br><strong style="color:#d9534f;">${targetGameData.title}</strong>?`;
+    gameMessage.innerHTML = `Temukan di peta ${kataTanya}:<br><strong style="color:#cc4444;">${targetGameData.title}</strong>?`;
     
     // Peta bisa diklik
     poolGameData.forEach(record => {
@@ -270,7 +270,7 @@ function setupGame1() {
 // ------------------------------------------
 function setupGame2() {
     // Teks pertanyaan disederhanakan agar cocok untuk semua kategori
-    gameMessage.innerHTML = `Manakah yang menggambarkan/foto dari:<br><strong style="color:#d9534f;">${targetGameData.title}</strong>?`;
+    gameMessage.innerHTML = `Manakah yang menggambarkan/foto dari:<br><strong style="color:#cc4444;">${targetGameData.title}</strong>?`;
     
     // 1. Siapkan Opsi Benar
     let opsiBenar = { 
@@ -338,7 +338,7 @@ function renderPilihanGandaGambar(options, markerTargetAsli) {
             });
             
             if (!isBenar) {
-                this.style.borderColor = "#d9534f"; // Merah
+                this.style.borderColor = "#cc4444"; // Merah
                 this.style.boxShadow = "0 0 8px rgba(217, 83, 79, 0.5)";
                 let btnBenar = gameMessage.querySelector('.btn-game-option-img[data-benar="true"]');
                 if(btnBenar) {
