@@ -879,9 +879,9 @@ select option:disabled {
 }
 
 /* ==========================================================================
-   12. UI MODE GAME (Eksklusif)
+   12. UI MODE GAME (Eksklusif) - REVISI MOBILE SAFE
    ========================================================================== */
-/* Selimut Hitam (Berada di Bawah Panel (9999), di Atas Peta (400)) */
+/* Selimut Hitam (Ronde 2 & 3) */
 #game-overlay {
   position: fixed; 
   top: 0; left: 0; 
@@ -890,49 +890,54 @@ select option:disabled {
   transition: background 0.3s ease;
 }
 
-/* Ronde 1: Tembus Pandang & Klik Tembus ke Peta */
 #game-overlay.ronde-1 {
   background: transparent;
-  pointer-events: none; 
+  pointer-events: none; /* Peta bisa diklik dengan bebas */
 }
 
-/* Ronde 2 & 3: Selimut Hitam & Tahan Klik ke Peta */
 #game-overlay.ronde-lanjut {
-  background: rgba(0, 0, 0, 0.8);
-  pointer-events: auto; 
+  background: rgba(0, 0, 0, 0.8); /* Selimut hitam muncul */
+  pointer-events: auto; /* Tahan klik ke peta */
 }
 
-/* Mengunci Layar Peta Secara Total Saat Evaluasi/Akhir Game */
 #game-overlay.lock-screen {
   pointer-events: auto !important; 
 }
 
-/* Kotak Dialog Game (Kasta Tertinggi: 10000) */
+/* Kotak Dialog Game */
 #game-dialog {
-  position: fixed; 
-  top: 12%; left: 50%; 
-  transform: translateX(-50%); 
-  z-index: 10000; 
-  background: white; 
-  padding: 20px; 
-  border-radius: 10px; 
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-  text-align: center; 
-  width: 80%; 
-  max-width: 400px; 
-  max-height: 80vh; 
-  overflow-y: auto;
+  position: fixed; top: 12%; left: 50%; transform: translateX(-50%); 
+  z-index: 10000; background: white; padding: 20px; border-radius: 10px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; 
+  width: 80%; max-width: 400px; max-height: 80vh; overflow-y: auto;
 }
-
 #game-dialog h3 { margin: 0 0 10px 0; }
 #game-dialog p { margin: 0; font-size: 16px; }
 
-/* KUNCI OTORITAS: Melumpuhkan semua interaksi kursor */
-.terkunci-game {
-  pointer-events: none !important;
+/* --------------------------------------------------------------------------
+   Menaikkan Kasta Panel & Header agar tidak tertutup selimut hitam.
+   HANYA atur z-index, biarkan position diatur oleh CSS mobile Anda.
+   -------------------------------------------------------------------------- */
+#branding, #panel-handle, #panel, #navigasi-utama {
+  z-index: 9999 !important; 
 }
 
-/* Pengecualian agar tombol Batal & Lewati tetap bisa dipencet */
-.tombol-kebal-game {
-  pointer-events: auto !important;
+/* --------------------------------------------------------------------------
+   TAMENG KACA: Mencegah panel bisa diklik TANPA merusak layout Mobile
+   -------------------------------------------------------------------------- */
+.terkunci-game {
+  /* position: relative; (TANPA !important). 
+     Di mobile, #panel memiliki 'position: absolute' (berbasis ID), 
+     sehingga absolute akan tetap menang dan layout bottom sheet Anda aman! */
+  position: relative; 
+}
+
+.terkunci-game::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 99999; /* Kaca menutupi bagian depan isi panel */
+  background: transparent; /* Bening, UI Anda tetap terlihat */
+  pointer-events: auto !important; /* Menelan semua klik agar tidak jatuh ke peta */
+  cursor: not-allowed;
 }
