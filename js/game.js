@@ -110,13 +110,13 @@ btnMulaiGame.addEventListener('click', function(e) {
     }
     
     navHasil.classList.add('nav-disabled');
-    navBeranda.textContent = "Batal Game"; 
+    navBeranda.textContent = "Akhiri"; 
     navBeranda.classList.add('text-danger'); 
     
     // ---> TAMBAHKAN BARIS INI: Cabut fungsi hash agar tidak memicu resetApp() <---
 navBeranda.setAttribute('href', 'javascript:void(0)');
 
-    btnMenuInduk.textContent = "Skip ⏭️";
+    btnMenuInduk.textContent = "Lewati Soal";
     btnMenuInduk.classList.add('text-primary');
     document.getElementById('submenu-atas').classList.add('d-none');
 
