@@ -437,16 +437,20 @@ function evaluasiJawabanGame(isBenar, titleDiklik, qidDiklik, markerSistem) {
 // 5. HELPER PANEL (Tanpa Ubah URL Hash)
 // ==========================================
 function bukaPanelEksklusif(qid) {
-    // 1. Render konten ke DOM (menghapus d-none dari #details)
     displayRecordDetails(qid); 
     
     const panelMobile = document.getElementById('panel');
     
-    // 2. FORCE REFLOW (TANPA TIMEOUT): 
-    // Membaca property ini memaksa browser memproses DOM saat ini juga
+    // PEMBUNUH ZOMBIE: Jika ada perintah tutup yang nyangkut, batalkan!
+    if (panelMobile && panelMobile._transitionHandler) {
+        panelMobile.removeEventListener('transitionend', panelMobile._transitionHandler);
+        panelMobile._transitionHandler = null;
+    }
+
+    // Force Reflow agar animasi naik mulus
     if (panelMobile) void panelMobile.offsetHeight;
     
-    // 3. Jalankan animasi tarik ke atas
+    // Animasi tarik ke atas
     if (typeof window.setMobilePanelExpanded === 'function') {
         window.setMobilePanelExpanded(true, true);
     }
@@ -464,31 +468,40 @@ function bukaPanelEksklusif(qid) {
 function tutupPanelEksklusif() {
     const panelMobile = document.getElementById('panel');
 
-    // 1. Tarik panel ke bawah terlebih dahulu (mulai animasi)
-    if (typeof window.setMobilePanelExpanded === 'function') {
-        window.setMobilePanelExpanded(false, false);
-    }
-
     if (panelMobile) {
-        // 2. EVENT LISTENER (TANPA TIMEOUT): 
-        // Tunggu sampai animasi CSS benar-benar selesai
-        panelMobile.addEventListener('transitionend', function handler(e) {
-            // Pastikan kita hanya bereaksi saat animasi posisi (transform) selesai
-            if (e.propertyName === 'transform') {
-                displayPanelContent('index'); // Sembunyikan #details, munculkan #index
-                panelMobile.removeEventListener('transitionend', handler); // Hapus pendengar agar tidak bocor
-            }
-        });
+        // Hapus listener lama jika masih ada sisa
+        if (panelMobile._transitionHandler) {
+            panelMobile.removeEventListener('transitionend', panelMobile._transitionHandler);
+        }
 
-        // 3. Kunci panel untuk soal berikutnya (Opacity 1 sesuai permintaan sebelumnya)
+        // Simpan listener di memori elemen agar bisa dilacak
+        panelMobile._transitionHandler = function(e) {
+            if (e.target === panelMobile && e.propertyName === 'transform') {
+                displayPanelContent('index'); 
+                // Hapus dirinya sendiri setelah berhasil dijalankan
+                panelMobile.removeEventListener('transitionend', panelMobile._transitionHandler);
+                panelMobile._transitionHandler = null;
+            }
+        };
+
+        // Pasang pendengar animasi
+        panelMobile.addEventListener('transitionend', panelMobile._transitionHandler);
+
+        // Kunci panel untuk soal berikutnya
         if (isGameMode) {
             panelMobile.style.setProperty('pointer-events', 'none', 'important');
             panelMobile.style.opacity = '1';
             panelMobile.style.removeProperty('z-index');
-// Tahan klik di header & navigasi
+            
             const headerBranding = document.getElementById('branding');
             if (headerBranding) headerBranding.style.setProperty('pointer-events', 'auto', 'important');
         }
+    }
+
+    // TARIK PANEL KE BAWAH DENGAN ANIMASI
+    // Ubah parameter kedua menjadi 'true' agar animasi menutupnya terlihat
+    if (typeof window.setMobilePanelExpanded === 'function') {
+        window.setMobilePanelExpanded(false, true); 
     }
 }
 // ==========================================
