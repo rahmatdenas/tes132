@@ -83,21 +83,12 @@ btnMulaiGame.addEventListener('click', function(e) {
     }
     
     // 3. UI KUNCIAN MENGGUNAKAN CLASS CSS (TANPA INLINE STYLE)
-    const elemenDikunci = ['panel', 'branding', 'panel-handle', 'navigasi-utama'];
+    const elemenDikunci = ['panel', 'branding', 'panel-handle'];
     elemenDikunci.forEach(id => {
         let el = document.getElementById(id);
         if (el) el.classList.add('terkunci-game');
     });
 
-    // Beri kekebalan khusus pada tombol Akhiri dan Lewati
-    if (navBeranda) {
-        navBeranda.classList.add('tombol-kebal-game');
-        if (navBeranda.parentElement) navBeranda.parentElement.classList.add('tombol-kebal-game');
-    }
-    if (btnMenuInduk) {
-        btnMenuInduk.classList.add('tombol-kebal-game');
-        if (btnMenuInduk.parentElement) btnMenuInduk.parentElement.classList.add('tombol-kebal-game');
-    }
     
     // Sesuaikan Tampilan Navigasi
     navHasil.classList.add('nav-disabled');
@@ -499,12 +490,6 @@ function akhiriGameMode(isMenang = false) {
         gameOverlay.classList.add('lock-screen');
         gameOverlay.classList.remove('d-none');
         
-        const panelMobile = document.getElementById('panel');
- if (panelMobile) {
-        panelMobile.style.opacity = '1'; 
-        // Hapus z-index eksklusif agar kembali ke kasta normal HTML/CSS
-        panelMobile.style.removeProperty('z-index');
-    }
 
         setTimeout(() => {
             let pesanSkor = gameScore > 0 
@@ -535,21 +520,12 @@ function lakukanPembersihanUIGame() {
     currentDisplayedQid = null;
 
     // 1. Cabut Semua Kuncian
-    const elemenDikunci = ['panel', 'branding', 'panel-handle', 'navigasi-utama'];
+    const elemenDikunci = ['panel', 'branding', 'panel-handle'];
     elemenDikunci.forEach(id => {
         let el = document.getElementById(id);
         if (el) el.classList.remove('terkunci-game');
     });
 
-    if (navBeranda) {
-        navBeranda.classList.remove('tombol-kebal-game');
-        if (navBeranda.parentElement) navBeranda.parentElement.classList.remove('tombol-kebal-game');
-    }
-    if (btnMenuInduk) {
-        btnMenuInduk.classList.remove('tombol-kebal-game');
-        if (btnMenuInduk.parentElement) btnMenuInduk.parentElement.classList.remove('tombol-kebal-game');
-    }
-    
     // 2. Bersihkan UI Game Overlay & Layer
     if (gameClusterLayer) {
         Map.removeLayer(gameClusterLayer);
