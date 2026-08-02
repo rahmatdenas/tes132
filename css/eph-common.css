@@ -910,6 +910,8 @@ select option:disabled {
   z-index: 10000; background: white; padding: 20px; border-radius: 10px; 
   box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; 
   width: 80%; max-width: 400px; max-height: 80vh; overflow-y: auto;
+ font-family: 'Open sans';
+   font-size: 15px;
 }
 #game-dialog h3 { margin: 0 0 10px 0; }
 #game-dialog p { margin: 0; font-size: 16px; }
